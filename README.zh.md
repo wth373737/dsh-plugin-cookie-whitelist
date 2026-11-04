@@ -150,6 +150,7 @@ dataDir: ''             # 留空使用 $DSH_HOME/cookie-whitelist
 ```bash
 node scripts/build-extensions.mjs   # 从 extension-src 生成 extension/chromium 与 extension/firefox
 node test/smoke.mjs                 # util / store / vault / receiver / tools
+node test/extension-sim.mjs         # 用 mock chrome.* 把扩展 background 跑通，验证任务/过滤/上报
 node test/browser.mjs               # 需要本机 Chrome/Edge；验证 Cookie 注入、点击、POST 拦截、截图
 node test/host-sim.mjs              # 验证 Host 入口注册的工具/路由/提示词
 ```
@@ -159,3 +160,4 @@ node test/host-sim.mjs              # 验证 Host 入口注册的工具/路由/�
 ## 许可
 
 MIT。图标为本项目原创；扩展与 Host 代码不包含第三方运行时。
+

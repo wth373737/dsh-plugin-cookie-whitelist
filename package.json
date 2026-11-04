@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build:ext": "node scripts/build-extensions.mjs",
-    "test": "node test/smoke.mjs && node test/browser.mjs && node test/host-sim.mjs",
+    "test": "node test/smoke.mjs && node test/extension-sim.mjs && node test/browser.mjs && node test/host-sim.mjs",
     "check": "node --check index.js && node --check client.js && node --check lib/service.mjs && node --check scripts/build-extensions.mjs"
   },
   "keywords": [
@@ -63,3 +63,4 @@
     }
   }
 }
+

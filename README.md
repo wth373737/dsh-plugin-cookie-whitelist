@@ -56,6 +56,7 @@ See [SECURITY.md](./SECURITY.md) and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.
 ```bash
 node scripts/build-extensions.mjs
 node test/smoke.mjs
+node test/extension-sim.mjs
 node test/browser.mjs       # requires Chrome/Edge; launches a disposable instance
 node test/host-sim.mjs
 ```
@@ -63,3 +64,4 @@ node test/host-sim.mjs
 ## License
 
 MIT. Original icons; no third-party runtime is bundled.
+
