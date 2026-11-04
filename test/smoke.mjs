@@ -3,6 +3,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  cookieBelongsToDomain,
   cookieMatchesHost,
   domainMatches,
   normalizeDomain,
@@ -53,6 +54,11 @@ async function testUtil() {
   assert.equal(domainMatches('example.com.evil.com', 'example.com'), false)
   assert.equal(cookieMatchesHost('.example.com', 'mail.example.com'), true)
   assert.equal(cookieMatchesHost('mail.example.com', 'example.com'), false)
+  assert.equal(cookieBelongsToDomain('www.example.com', 'example.com'), true)
+  assert.equal(cookieBelongsToDomain('example.com', 'www.example.com'), true)
+  assert.equal(cookieBelongsToDomain('.example.com', 'mail.example.com'), true)
+  assert.equal(cookieBelongsToDomain('evil.com', 'example.com'), false)
+  assert.equal(cookieBelongsToDomain('notexample.com', 'example.com'), false)
   assert.equal(parseWebUrl('javascript:alert(1)'), null)
   assert.equal(parseWebUrl('https://example.com/').hostname, 'example.com')
 }
@@ -112,6 +118,15 @@ async function testStoreAndVault() {
   assert.equal(forUrl.length, 2)
   assert.equal(vault.getForUrl('https://example.com/', []).length, 0)
   assert.equal(vault.getForUrl('https://evil.com/', ['example.com']).length, 0)
+
+  const subVault = new CookieVault({ ttlMs: 60_000, log: silent })
+  const subPut = subVault.put('example.com', [
+    { name: 'sub', value: 'sub-secret', domain: 'www.example.com', path: '/', secure: true, httpOnly: true, sameSite: 'lax', hostOnly: true },
+  ])
+  assert.equal(subPut.accepted, 1)
+  assert.equal(subVault.getForUrl('https://www.example.com/', ['example.com']).length, 1)
+  assert.equal(subVault.getForUrl('https://example.com/', ['example.com']).length, 0)
+  subVault.dispose()
 
   const rejected = vault.put('example.com', [
     { name: 'bad', value: 'x', domain: 'evil.com', path: '/', secure: true, httpOnly: false },
@@ -246,5 +261,6 @@ await testStoreAndVault()
 await testReceiver()
 await testTools()
 console.log('smoke: ok')
+
 
 

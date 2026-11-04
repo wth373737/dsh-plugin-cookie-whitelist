@@ -122,15 +122,18 @@ function isCookieForDomain(cookieDomain, requestedDomain) {
   const cd = String(cookieDomain ?? '').replace(/^\.+/, '').toLowerCase()
   const rd = String(requestedDomain ?? '').toLowerCase()
   if (cd === '' || rd === '') return false
-  return rd === cd || rd.endsWith(`.${cd}`)
+  // Collection rule: the cookie may belong to the requested host, a
+  // subdomain of it, or a parent domain that applies to it.
+  return cd === rd || cd.endsWith(`.${rd}`) || rd.endsWith(`.${cd}`)
 }
 
 async function readCookiesForDomain(domain) {
   const seen = new Map()
-  for (const url of [`https://${domain}/`, `http://${domain}/`]) {
+  const queries = [{ url: `https://${domain}/` }, { url: `http://${domain}/` }, { domain }]
+  for (const query of queries) {
     let list = []
     try {
-      list = await cookiesGetAll({ url })
+      list = await cookiesGetAll(query)
     } catch {
       continue
     }
@@ -292,4 +295,5 @@ api.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 ensureAlarm()
 scheduleFastPoll()
 void poll()
+
 
