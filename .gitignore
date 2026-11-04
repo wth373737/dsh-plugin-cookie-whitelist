@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.cookie-whitelist/
+.tmp-*
+shots/
+.DS_Store

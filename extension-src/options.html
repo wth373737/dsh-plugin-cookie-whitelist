@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSH Cookie Whitelist Bridge</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <img src="icon.svg" alt="" width="44" height="44">
+      <div>
+        <h1>DSH Cookie Whitelist Bridge</h1>
+        <p class="sub">把浏览器里的 Cookie 只交给本地 DSH 插件，并且只限用户在插件里逐条批准的域名。</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>配对</h2>
+      <p class="hint">在 DSH 的「设置 → Cookie 白名单」里复制接收地址和令牌。接收端只监听 <code>127.0.0.1</code>。</p>
+      <label>接收地址
+        <input id="receiverUrl" type="url" placeholder="http://127.0.0.1:47821" autocomplete="off" spellcheck="false">
+      </label>
+      <label>配对令牌
+        <span class="token-row">
+          <input id="token" type="password" placeholder="从 DSH 设置页复制" autocomplete="off" spellcheck="false">
+          <button id="toggleToken" class="ghost" type="button">显示</button>
+        </span>
+      </label>
+      <label>浏览器标签
+        <input id="label" type="text" placeholder="Chrome/Edge 或 Firefox" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="row">
+        <button id="save" class="primary" type="button">保存</button>
+        <button id="test" type="button">测试连接</button>
+        <button id="sync" type="button">立即同步</button>
+      </div>
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>这个扩展做什么</h2>
+      <ul class="list">
+        <li>轮询本机接收器，只读取接收器返回的、已批准白名单域名的 Cookie。</li>
+        <li>在离开浏览器之前再次按域名过滤；不会把其他站点的 Cookie 发出。</li>
+        <li>只向 <code>127.0.0.1</code> 发送数据，不连接任何远程服务器，无遥测。</li>
+        <li>浏览器关闭后扩展不保留 Cookie 副本；插件端也只保存在内存中。</li>
+      </ul>
+      <p class="warn">扩展需要 <code>&lt;all_urls&gt;</code> 权限，这是 <code>chrome.cookies</code> / <code>browser.cookies</code> 读取任意域名 Cookie 的前置条件；扩展没有内容脚本，也不读取页面内容。</p>
+    </section>
+
+    <section class="card">
+      <h2>运行状态</h2>
+      <dl class="kv">
+        <dt>最近轮询</dt><dd id="lastPoll">—</dd>
+        <dt>最近错误</dt><dd id="lastError">—</dd>
+        <dt>连接状态</dt><dd id="connState">未知</dd>
+      </dl>
+    </section>
+
+    <footer class="foot">DSH Cookie Whitelist Bridge · local-only · v1.0.0</footer>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

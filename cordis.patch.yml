@@ -1,0 +1,18 @@
+# dsh-plugin-cookie-whitelist bundle patch.
+#
+# The row is activated by the profile bundle stack; the client module registry
+# matches its loader entry by this package name, so keep `name` exact.
+- insert:
+    - id: cookie-whitelist
+      name: dsh-plugin-cookie-whitelist
+      config:
+        server:
+          port: 47821
+        security:
+          requestTtlMinutes: 10
+          vaultTtlMinutes: 120
+          maxCookiesPerDomain: 3000
+          maxCookieBytesPerDomain: 2097152
+        browser:
+          idleTimeoutMin: 15
+          readTimeoutMs: 30000

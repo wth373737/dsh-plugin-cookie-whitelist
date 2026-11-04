@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cookie Whitelist",
+    "description": "Export cookies from Chrome, Edge, or Firefox and inject them only into the domains you approve, using an in-memory vault and a read-only browser."
+  }
+}

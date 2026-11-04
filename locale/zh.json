@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cookie 白名单",
+    "description": "从 Chrome/Edge/Firefox 导出 Cookie，按你逐条批准的域名白名单注入只读浏览器；Cookie 只存在内存，绝不写入磁盘或日志。"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "name": "dsh-plugin-cookie-whitelist",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cookie whitelist bridge for DeepSeek Harness: browser-extension cookie export, per-domain approval, in-memory vault, and a read-only CDP browser that only sends cookies to approved domains.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "extension",
+    "extension-src",
+    "scripts",
+    "test",
+    "docs",
+    "README.md",
+    "README.zh.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:ext": "node scripts/build-extensions.mjs",
+    "test": "node test/smoke.mjs && node test/browser.mjs && node test/host-sim.mjs",
+    "check": "node --check index.js && node --check client.js && node --check lib/service.mjs && node --check scripts/build-extensions.mjs"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "cookie",
+    "whitelist",
+    "browser",
+    "cdp",
+    "privacy"
+  ],
+  "author": "wth373737",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wth373737/dsh-plugin-cookie-whitelist.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wth373737/dsh-plugin-cookie-whitelist/issues"
+  },
+  "homepage": "https://github.com/wth373737/dsh-plugin-cookie-whitelist#readme",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}
