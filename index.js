@@ -11,7 +11,7 @@ import { mergeDeep } from './lib/util.mjs'
 
 export const name = 'cookie-whitelist'
 export const inject = ['tools']
-export const version = '1.0.0'
+export const version = '1.1.0'
 
 const DEFAULTS = {
   dataDir: '',
@@ -31,6 +31,11 @@ const DEFAULTS = {
     readTimeoutMs: 30000,
   },
   syncWaitMs: 8000,
+  files: {
+    maxBytes: 8 * 1024 * 1024,
+    maxPages: 10,
+    maxChars: 200000,
+  },
 }
 
 export function apply(ctx, config = {}) {
@@ -48,4 +53,6 @@ export function apply(ctx, config = {}) {
     ctx.effect(() => ctx.tools.register(tool))
   }
 }
+
+
 

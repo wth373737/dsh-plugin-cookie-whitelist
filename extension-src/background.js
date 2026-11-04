@@ -7,7 +7,7 @@
  * the browser, and POSTs the result to 127.0.0.1. It never talks to any other
  * origin and never logs cookie values.
  */
-const VERSION = '1.0.0'
+const VERSION = '1.1.0'
 const DEFAULT_RECEIVER = 'http://127.0.0.1:47821'
 const TOKEN_HEADER = 'x-cookie-whitelist-token'
 const isFirefox = typeof globalThis.browser !== 'undefined' && globalThis.browser?.runtime?.id
@@ -295,5 +295,6 @@ api.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 ensureAlarm()
 scheduleFastPoll()
 void poll()
+
 
 

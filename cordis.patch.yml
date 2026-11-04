@@ -16,3 +16,8 @@
         browser:
           idleTimeoutMin: 15
           readTimeoutMs: 30000
+        files:
+          maxBytes: 8388608
+          maxPages: 10
+          maxChars: 200000
+

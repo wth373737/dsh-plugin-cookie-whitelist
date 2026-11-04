@@ -100,7 +100,7 @@ dsh plugin --profile desktop add github:wth373737/dsh-plugin-cookie-whitelist
 | `cookie_whitelist_status` | 查看白名单、待批准请求、扩展心跳、Vault 条数、只读浏览器状态。永不返回值。 |
 | `cookie_authorize` | 请求把某个域名加入白名单。先创建待办，再走聊天内原生审批；无 UI 时留在设置页待办。 |
 | `cookie_sync` | 让扩展重新读取指定（或全部）白名单域名的 Cookie；只返回计数。 |
-| `cookie_browse` | 只读浏览器：`open` / `read` / `snapshot` / `click` / `scroll` / `screenshot` / `status` / `close`。 |
+| `cookie_browse` | 只读浏览器：`open` / `read` / `snapshot` / `click` / `scroll` / `screenshot` / `files` / `read_file` / `status` / `close`。 |
 
 典型流程：
 
@@ -112,6 +112,20 @@ cookie_browse { action: "open", url: "https://example.com/" }
 cookie_browse { action: "read" }
 cookie_browse { action: "click", ref: "..." }   // 只用于翻页/展开
 ```
+
+### 文件与 Course Planner
+
+课程页把 Test 日期、Schedule、Rubric、Guideline 放在 PDF/Office 文件里时，先列候选再读取：
+
+```text
+cookie_browse { action: "files" }
+cookie_browse { action: "read_file", url: "<Course Planner 的 mod/resource 链接>" }
+```
+
+- `read_file` 会用当前白名单 Cookie 下载，PDF 用 `pdfjs-dist` 提取文本（支持分页/字符上限）。
+- 如果 `mod/resource/view.php` 本身是 HTML 包装页，会优先跟随名称含 `Course Planner` / `Planner` / `Schedule` / `Syllabus` / `Teaching Plan` 的 PDF 链接；否则返回 `fileCandidates` 让你选择。
+- 文件超过默认 8 MB 时，会通过聊天内审批向你申请许可；默认读完即丢弃，不保留文件。要保留请明确说，或用 `keep: true`。
+- 这很重要：例如 CMT221W 的 **Test 1 日期只写在 Course Planner PDF 里**，课程首页/周 section 不显示具体日期。
 
 ## 配置
 
@@ -131,6 +145,10 @@ browser:
   idleTimeoutMin: 15
   readTimeoutMs: 30000
 syncWaitMs: 8000
+files:
+  maxBytes: 8388608     # 超过后先向用户申请
+  maxPages: 10
+  maxChars: 200000
 dataDir: ''             # 留空使用 $DSH_HOME/cookie-whitelist
 ```
 
@@ -150,6 +168,7 @@ dataDir: ''             # 留空使用 $DSH_HOME/cookie-whitelist
 ```bash
 node scripts/build-extensions.mjs   # 从 extension-src 生成 extension/chromium 与 extension/firefox
 node test/smoke.mjs                 # util / store / vault / receiver / tools
+node test/file-reader.mjs           # 文件下载、HTML 包装页跟随、PDF 文本提取、大小上限
 node test/extension-sim.mjs         # 用 mock chrome.* 把扩展 background 跑通，验证任务/过滤/上报
 node test/browser.mjs               # 需要本机 Chrome/Edge；验证 Cookie 注入、点击、POST 拦截、截图
 node test/host-sim.mjs              # 验证 Host 入口注册的工具/路由/提示词
@@ -159,5 +178,6 @@ node test/host-sim.mjs              # 验证 Host 入口注册的工具/路由/�
 
 ## 许可
 
-MIT。图标为本项目原创；扩展与 Host 代码不包含第三方运行时。
+MIT。图标为本项目原创；Host 端仅用 pdfjs-dist 做 PDF 文本提取，浏览器扩展不包含第三方运行时。
+
 

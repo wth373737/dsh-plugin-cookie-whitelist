@@ -11,6 +11,7 @@
 | `lib/receiver.mjs` | HTTP receiver on `127.0.0.1`; token and Origin checks; task/cookie protocol. |
 | `lib/cdp.mjs` | Browser discovery, disposable Chromium launch, DevToolsActivePort parsing, WebSocket CDP client. |
 | `lib/browser.mjs` | Read-only page operations and all interception layers. |
+| `lib/file-reader.mjs` | Whitelist-cookie file download, HTML resource-wrapper link discovery, PDF text extraction (pdfjs-dist), size limits. |
 | `lib/login.mjs` | Visible incognito login window; capture cookies on finish. |
 | `lib/tools.mjs` | Agent-facing tool definitions. |
 | `client.js` | Settings page in the Harness Web UI. |
@@ -108,6 +109,19 @@ continueRequest()  // pass headers only when a header was actually removed
 
 Important CDP detail: `Fetch.Headers` is an **array** of `{ name, value }`, while `Network.Headers` is a dictionary. Passing the dictionary to `Fetch.continueRequest` yields `Invalid parameters` and leaves the navigation paused. The code passes headers only when it strips a cookie, and converts to the array shape.
 
+## File reading flow
+
+`cookie_browse action:"files"` runs a fixed DOM expression that returns `<a href>` candidates whose URL or text looks like a file (`mod/resource`, `pluginfile`, `.pdf/.docx/.xlsx/...`, or a keyword such as planner/schedule/syllabus). It does not download.
+
+`cookie_browse action:"read_file"` calls `readFileFromUrl`:
+
+1. `fetchWebFile` follows redirects manually. At each hop it asks the vault for cookies for that exact URL, so a cross-host redirect is anonymous.
+2. The body is capped by `files.maxBytes`. `Content-Length` above the cap throws `FileTooLargeError` before reading; an unknown-length body is cancelled once the running total exceeds the cap.
+3. If the response is HTML (Moodle `mod/resource/view.php` wrapper), `extractFileLinks` parses the **full** HTML for document links. A candidate whose label/URL matches `course planner|planner|schedule|syllabus|teaching plan` is followed once; otherwise `fileCandidates` is returned for the agent to choose.
+4. PDF bytes go to `extractPdfText`, which dynamically imports `pdfjs-dist/legacy/build/pdf.mjs`, reads `getTextContent()` per page up to `files.maxPages`, and caps characters at `files.maxChars`. `isEvalSupported: false`; the PDF's own JavaScript is not run.
+5. Text/CSV is decoded with the response charset. Office/binary/images are returned as metadata (no silent misread).
+6. `keep: false` (default) writes nothing; `keep: true` writes to `downloads/` and returns the path. The tool asks the user through `approval` before exceeding the inline limit.
+
 ## Storage layout
 
 ```text
@@ -132,3 +146,4 @@ The patch supplies defaults; `dataDir` and `browser.executable` are the only env
 - Extension asleep/offline: `cookie_sync` returns `extensionConnected: false` or `completed: false`, not a fake success.
 - Login window closed by the user: `login.finish` fails with a clear message and cleans up.
 - State write failure: logged; the in-memory state remains usable for the session.
+

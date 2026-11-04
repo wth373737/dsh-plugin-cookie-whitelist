@@ -1,6 +1,8 @@
+package-lock.json
 node_modules/
 *.log
 .cookie-whitelist/
 .tmp-*
 shots/
 .DS_Store
+

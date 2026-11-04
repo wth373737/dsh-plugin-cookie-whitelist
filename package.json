@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-cookie-whitelist",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Cookie whitelist bridge for DeepSeek Harness: browser-extension cookie export, per-domain approval, in-memory vault, and a read-only CDP browser that only sends cookies to approved domains.",
@@ -31,8 +31,11 @@
   ],
   "scripts": {
     "build:ext": "node scripts/build-extensions.mjs",
-    "test": "node test/smoke.mjs && node test/extension-sim.mjs && node test/browser.mjs && node test/host-sim.mjs",
+    "test": "node test/smoke.mjs && node test/file-reader.mjs && node test/extension-sim.mjs && node test/browser.mjs && node test/host-sim.mjs",
     "check": "node --check index.js && node --check client.js && node --check lib/service.mjs && node --check scripts/build-extensions.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^6.5.438"
   },
   "keywords": [
     "dsh-plugin",
@@ -63,4 +66,8 @@
     }
   }
 }
+
+
+
+
 

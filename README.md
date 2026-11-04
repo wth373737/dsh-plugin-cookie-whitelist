@@ -30,7 +30,18 @@ For browsers without a supported extension, use the settings page's **Temporary 
 | `cookie_whitelist_status` | Whitelist, pending requests, extension heartbeat, vault counts, browser state. Never returns values. |
 | `cookie_authorize` | Ask the user to approve one domain; approval is a user action. |
 | `cookie_sync` | Ask the extension to re-read approved domains; counts only. |
-| `cookie_browse` | Read-only `open` / `read` / `snapshot` / `click` / `scroll` / `screenshot` / `status` / `close`. |
+| `cookie_browse` | Read-only `open` / `read` / `snapshot` / `click` / `scroll` / `screenshot` / `files` / `read_file` / `status` / `close`. |
+
+### Files and Course Planner
+
+Course pages often put test dates, schedules, rubrics, and guidelines in files rather than page text. Use:
+
+```text
+cookie_browse { action: "files" }
+cookie_browse { action: "read_file", url: "<mod/resource link>" }
+```
+
+`read_file` downloads with whitelist cookies only, follows an HTML resource wrapper to a preferred `Course Planner` / `Schedule` / `Syllabus` / `Teaching Plan` PDF, and extracts PDF text with `pdfjs-dist`. Files above the default 8 MB limit trigger a chat approval. Nothing is kept by default; ask before using `keep: true`. This matters: in CMT221W the Test 1 date appears only in the Course Planner PDF.
 
 ## Security model
 
@@ -56,6 +67,7 @@ See [SECURITY.md](./SECURITY.md) and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.
 ```bash
 node scripts/build-extensions.mjs
 node test/smoke.mjs
+node test/file-reader.mjs
 node test/extension-sim.mjs
 node test/browser.mjs       # requires Chrome/Edge; launches a disposable instance
 node test/host-sim.mjs
@@ -63,5 +75,6 @@ node test/host-sim.mjs
 
 ## License
 
-MIT. Original icons; no third-party runtime is bundled.
+MIT. Original icons. The Host half depends on pdfjs-dist for PDF text extraction; the browser extension has no third-party runtime.
+
 
